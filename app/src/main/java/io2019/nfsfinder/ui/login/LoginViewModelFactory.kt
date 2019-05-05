@@ -4,6 +4,8 @@ import android.arch.lifecycle.ViewModel
 import android.arch.lifecycle.ViewModelProvider
 import io2019.nfsfinder.data.LoginDataSource
 import io2019.nfsfinder.data.LoginRepository
+import io2019.nfsfinder.data.database.DatabaseHandler
+import io2019.nfsfinder.data.database.RequestHandler
 
 /**
  * ViewModel provider factory to instantiate LoginViewModel.
@@ -16,7 +18,7 @@ class LoginViewModelFactory : ViewModelProvider.Factory {
         if (modelClass.isAssignableFrom(LoginViewModel::class.java)) {
             return LoginViewModel(
                 loginRepository = LoginRepository(
-                    dataSource = LoginDataSource()
+                    dataSource = LoginDataSource(handler = RequestHandler(dbHandler = DatabaseHandler()))
                 )
             ) as T
         }
