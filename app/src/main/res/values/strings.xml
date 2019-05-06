@@ -10,4 +10,7 @@
     <string name="invalid_password">Password must be >5 characters</string>
     <string name="login_failed">"Login failed"</string>
     <string name="title_activity_maps">Map</string>
+    <string name="search_hint">Enter Address</string>
+    <string name="magnifier_desc">Inactive search icon</string>
+    <string name="gps_desc">Center on device location</string>
 </resources>
