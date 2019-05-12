@@ -1,7 +1,7 @@
 package io2019.nfsfinder.ui.login
 
 /**
- * Authentication result : success (user details) or error message.
+ * Authentication loginResult : success (user details) or error message.
  */
 data class LoginResult(
     val success: LoggedInUserView? = null,

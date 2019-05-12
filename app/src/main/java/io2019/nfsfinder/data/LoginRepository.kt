@@ -1,6 +1,8 @@
 package io2019.nfsfinder.data
 
+import android.util.Log
 import io2019.nfsfinder.data.model.LoggedInUser
+import kotlin.properties.Delegates
 
 /**
  * Class that requests authentication and user information from the remote data source and
@@ -8,6 +10,13 @@ import io2019.nfsfinder.data.model.LoggedInUser
  */
 
 class LoginRepository(val dataSource: LoginDataSource) {
+    val LOGTAG = "LoginRepository"
+
+    var loginResult: Result<LoggedInUser>? by Delegates.observable<Result<LoggedInUser>?>(null) { _, _, new ->
+        onResultChange?.invoke(new)
+    }
+
+    var onResultChange: ((Result<LoggedInUser>?) -> Unit)? = null
 
     // in-memory cache of the loggedInUser object
     var user: LoggedInUser? = null
@@ -27,15 +36,22 @@ class LoginRepository(val dataSource: LoginDataSource) {
         dataSource.logout()
     }
 
-    fun login(username: String, password: String): Result<LoggedInUser> {
+    fun login(username: String, password: String) {
         // handle login
-        val result = dataSource.login(username, password)
+        dataSource.onResultChange = {
+            val res: Result<LoggedInUser> = it!!
 
-        if (result is Result.Success) {
-            setLoggedInUser(result.data)
+            if (res is Result.Success) {
+                Log.d(LOGTAG, "Setting logged in user")
+                setLoggedInUser(res.data)
+            } else {
+                Log.d(LOGTAG, "Error in authorisation, passing info further")
+            }
+
+            loginResult = res
         }
 
-        return result
+        dataSource.login(username, password)
     }
 
     private fun setLoggedInUser(loggedInUser: LoggedInUser) {

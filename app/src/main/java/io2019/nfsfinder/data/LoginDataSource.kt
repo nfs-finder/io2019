@@ -1,20 +1,34 @@
 package io2019.nfsfinder.data
 
+import android.util.Log
 import io2019.nfsfinder.data.model.LoggedInUser
 import io2019.nfsfinder.data.database.RequestHandler
 import java.io.IOException
+import kotlin.properties.Delegates
 
 /**
  * Class that handles authentication w/ login credentials and retrieves user information.
  */
 class LoginDataSource (private val handler: RequestHandler) {
-    fun login(email: String, password: String): Result<LoggedInUser> {
-        try {
-            val user = handler.requestLogin(email, password)
-            return Result.Success(user)
-        } catch (e: Throwable) {
-            return Result.Error(IOException("Error logging in", e))
+    val LOGTAG = "LoginDataSource"
+
+    var loginResult: Result<LoggedInUser>? by Delegates.observable<Result<LoggedInUser>?>(null) { _, _, new ->
+        onResultChange?.invoke(new)
+    }
+
+    var onResultChange: ((Result<LoggedInUser>?) -> Unit)? = null
+
+    fun login(email: String, password: String) {
+        val validReaction: (LoggedInUser) -> Unit = {
+            Log.d(LOGTAG, "Successful authorisation")
+            loginResult = Result.Success(it)
         }
+        val errorReaction: (Exception) -> Unit = {
+            Log.d(LOGTAG, "Error in authorisation")
+            loginResult = Result.Error(it)
+        }
+
+        handler.requestLogin(email, password, validReaction, errorReaction)
     }
 
     fun logout() {
