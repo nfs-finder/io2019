@@ -14,8 +14,6 @@ class RacerRepository (val loginRepository: LoginRepository) {
         val updateTask = fixedRateTimer(period = refreshTime) {
             this@RacerRepository.updateRacerMap()
         }
-
-        updateTask.
     }
 
     fun updateRacerMap() {
