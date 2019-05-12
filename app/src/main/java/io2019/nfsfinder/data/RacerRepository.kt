@@ -27,7 +27,6 @@ class RacerRepository (val loginRepository: LoginRepository) {
         val errorReaction: (Exception) -> Unit = {
             throw it
         }
-
         requestHandler.getRacers(loginRepository.user!!.userId, searchRadius, updateMap, errorReaction)
     }
 }
