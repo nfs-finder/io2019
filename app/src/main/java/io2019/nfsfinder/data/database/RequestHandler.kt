@@ -1,6 +1,7 @@
 package io2019.nfsfinder.data.database
 
 import android.util.Log
+import io2019.nfsfinder.data.Racer
 import io2019.nfsfinder.data.model.LoggedInUser
 
 
@@ -15,5 +16,9 @@ class RequestHandler {
         Log.d(LOGTAG, "Starting login task")
 
         loginTask.execute()
+    }
+
+    fun getRacers (radius: Long, validReaction: (Set<Racer>) -> Unit) {
+        
     }
 }
