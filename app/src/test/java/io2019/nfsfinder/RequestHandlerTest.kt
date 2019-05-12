@@ -1,33 +1,31 @@
 package io2019.nfsfinder
 
-import io2019.nfsfinder.data.database.DatabaseHandler
 import io2019.nfsfinder.data.model.LoggedInUser
 import io2019.nfsfinder.data.database.RequestHandler
-import com.mysql.cj.jdbc.exceptions.MysqlDataTruncation
 import org.junit.Test
 
 import org.junit.Assert.*
 
 class RequestHandlerTest {
-    private val requestHandler = RequestHandler(DatabaseHandler())
+    /*private val requestHandler = RequestHandler()
 
     @Test
     fun requestLoginTest() {
         val test = LoggedInUser(3, "unit")
         val response = requestHandler.requestLogin("unit@test.io", "test")
         assertEquals(test, response)
-    }
+    }*/
 
-    fun locOpTestTemplate(lng: Double, lat: Double) {
+    /* fun locOpTestTemplate(lng: Double, lat: Double) {
         val userId = 3
         val res = requestHandler.updateLocation(userId, lng, lat)
         assertEquals(1, res)
 
         val resPair = requestHandler.requestLocation(userId)
         assertEquals(Pair(lng, lat), resPair)
-    }
+    }*/
 
-    fun locOpTestExcTemplate(lng: Double, lat: Double) {
+    /*fun locOpTestExcTemplate(lng: Double, lat: Double) {
         var thrown = false
 
         try {
@@ -67,5 +65,5 @@ class RequestHandlerTest {
     @Test
     fun locOpTest6() {
         locOpTestExcTemplate(0.0, -91.0)
-    }
+    }*/
 }
