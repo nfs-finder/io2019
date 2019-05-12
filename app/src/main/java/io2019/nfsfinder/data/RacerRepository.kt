@@ -1,6 +1,5 @@
 package io2019.nfsfinder.data
 
-
 import io2019.nfsfinder.data.database.RequestHandler
 import java.util.*
 import kotlin.concurrent.fixedRateTimer
@@ -19,17 +18,16 @@ class RacerRepository (val loginRepository: LoginRepository) {
 
     fun updateRacerMap() {
         val updateMap: (Set<Racer>) -> Unit = {
-            for (racer in it) {
-                if (racerMap.containsKey(racer.userId)) {
-                    racerMap.getValue(racer.userId).username = racer.username
-                    racerMap.getValue(racer.userId).car = racer.car
-                    racerMap.getValue(racer.userId).location = racer.location
-                } else {
-                    racerMap[racer.userId] = racer
-                }
-            }
+            racerMap.clear()
+
+            for (racer in it)
+                racerMap[racer.userId] = racer
         }
 
-        requestHandler.getRacers(loginRepository.user!!.userId, searchRadius, updateMap)
+        val errorReaction: (Exception) -> Unit = {
+            throw it
+        }
+
+        requestHandler.getRacers(loginRepository.user!!.userId, searchRadius, updateMap, errorReaction)
     }
 }
