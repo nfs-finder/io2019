@@ -1,39 +1,50 @@
 package io2019.nfsfinder
 
-import android.support.v7.app.AppCompatActivity
-import android.os.Bundle
-
-import com.google.android.gms.maps.GoogleMap
-import com.google.android.gms.maps.OnMapReadyCallback
-import com.google.android.gms.maps.SupportMapFragment
 import android.Manifest
 import android.content.pm.PackageManager
+import android.location.Address
+import android.location.Geocoder
 import android.location.Location
+import android.os.Bundle
 import android.support.v4.app.ActivityCompat
 import android.support.v4.content.ContextCompat
+import android.support.v7.app.AppCompatActivity
 import android.util.Log
+import android.view.inputmethod.EditorInfo
+import android.widget.EditText
+import android.widget.ImageView
 import android.widget.Toast
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.CameraUpdateFactory
+import com.google.android.gms.maps.GoogleMap
+import com.google.android.gms.maps.OnMapReadyCallback
+import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.MarkerOptions
+import java.io.IOException
 
 class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
     private val LOG_TAG = "MapsActivity"
     private val DEFAULT_MAP_ZOOM = 10f
+    private val MY_LOC_STR = "My location"
 
     private val FINE_LOCATION = Manifest.permission.ACCESS_FINE_LOCATION
     private val COARSE_LOCATION = Manifest.permission.ACCESS_COARSE_LOCATION
     private val LOCATION_PERM_REQUEST_CODE = 1234
-
     private var mLocationPermsGranted = false
+
     private lateinit var mMap: GoogleMap
     private lateinit var mFusedLocationProviderClient: FusedLocationProviderClient
+    private lateinit var mSearchText: EditText
+    private lateinit var mGps: ImageView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_maps)
+        mSearchText = findViewById(R.id.searchInput)
+        mGps = findViewById(R.id.ic_gps)
 
         getLocationPermission()
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
@@ -65,6 +76,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
             mMap.isMyLocationEnabled = true
             mMap.uiSettings.isMyLocationButtonEnabled = false
+            searchInit()
         }
     }
 
@@ -84,6 +96,42 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         }
     }
 
+    private fun searchInit() {
+        mSearchText.setOnEditorActionListener { _, actionId, _ ->
+            return@setOnEditorActionListener when (actionId) {
+                EditorInfo.IME_ACTION_SEND -> {
+                    geoLocate()
+                    true
+                }
+                else -> false
+            }
+        }
+
+        mGps.setOnClickListener {
+            showDeviceLocation()
+        }
+    }
+
+    private fun geoLocate() {
+        val input = mSearchText.text.toString()
+        val geocoder = Geocoder(this)
+        var addresses: List<Address> = listOf()
+
+        try {
+            addresses = geocoder.getFromLocationName(input, 1)
+        } catch (e: IOException) {
+            Log.e(LOG_TAG, "geoLocate(): IOException: " + e.message)
+        }
+
+        if (addresses.isNotEmpty()) {
+            val address = addresses[0]
+
+            Log.d(LOG_TAG, "geoLocate(): location found: $address")
+
+            moveCamera(LatLng(address.latitude, address.longitude), DEFAULT_MAP_ZOOM, address.getAddressLine(0))
+        }
+    }
+
     private fun showDeviceLocation() {
         mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this)
 
@@ -94,7 +142,11 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                     if (task.isSuccessful) {
                         val currentLocation: Location = task.result
 
-                        moveCamera(LatLng(currentLocation.latitude, currentLocation.longitude), DEFAULT_MAP_ZOOM)
+                        moveCamera(
+                            LatLng(currentLocation.latitude, currentLocation.longitude),
+                            DEFAULT_MAP_ZOOM,
+                            MY_LOC_STR
+                        )
                     } else {
                         Toast.makeText(this, "Unable to get current location", Toast.LENGTH_SHORT).show()
                     }
@@ -105,8 +157,13 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         }
     }
 
-    private fun moveCamera(latLng: LatLng, zoom: Float) {
+    private fun moveCamera(latLng: LatLng, zoom: Float, title: String) {
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, zoom))
+
+        if (title != MY_LOC_STR) {
+            val options = MarkerOptions().position(latLng).title(title)
+            mMap.addMarker(options)
+        }
     }
 
     private fun getLocationPermission() {
