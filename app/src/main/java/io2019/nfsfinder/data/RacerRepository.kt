@@ -10,25 +10,24 @@ class RacerRepository (val loginRepository: LoginRepository) {
     private var searchRadius: Long = 1000 //in meters
     val requestHandler = RequestHandler()
 
-    init {
+    /*init {
         val updateTask = fixedRateTimer(period = refreshTime) {
             this@RacerRepository.updateRacerMap()
         }
-    }
+    }*/
 
     fun updateRacerMap() {
         val updateMap: (Set<Racer>) -> Unit = {
-            for (racer in it) {
-                if (racerMap.containsKey(racer.userId)) {
-                    racerMap.getValue(racer.userId).username = racer.username
-                    racerMap.getValue(racer.userId).car = racer.car
-                    racerMap.getValue(racer.userId).location = racer.location
-                } else {
-                    racerMap[racer.userId] = racer
-                }
-            }
+            racerMap.clear()
+
+            for (racer in it)
+                racerMap[racer.userId] = racer
         }
 
-        requestHandler.getRacers(loginRepository.user!!.userId, searchRadius, updateMap)
+        val errorReaction: (Exception) -> Unit = {
+            throw it
+        }
+
+        requestHandler.getRacers(loginRepository.user!!.userId, searchRadius, updateMap, errorReaction)
     }
 }
