@@ -16,6 +16,17 @@ class RacerRepository (val loginRepository: LoginRepository) {
         }
     }*/
 
+    companion object {
+        @Volatile
+        private var INSTANCE: RacerRepository? = null
+        fun getInstance(loginRepository: LoginRepository) =
+                INSTANCE ?: synchronized(this) {
+                    INSTANCE ?: RacerRepository(LoginRepository.getInstance(LoginDataSource(RequestHandler()))).also {
+                        INSTANCE = it
+                    }
+                }
+    }
+
     fun updateRacerMap() {
         val updateMap: (Set<Racer>) -> Unit = {
             racerMap.clear()
