@@ -4,6 +4,7 @@ import android.content.Intent
 import android.graphics.Color
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import android.view.Gravity
 import android.widget.TableLayout
 import android.widget.TableRow
 import android.widget.TextView
@@ -57,18 +58,22 @@ class RacersActivity : AppCompatActivity() {
             val userName = TextView(this)
             userName.text = userInfo.username
             userName.setTextColor(Color.BLACK)
+            userName.gravity = Gravity.CENTER
             user.addView(userName)
             val userVehicle = TextView(this)
             userVehicle.text = userInfo.car
             userVehicle.setTextColor(Color.BLACK)
+            userVehicle.gravity = Gravity.CENTER
             user.addView(userVehicle)
             val userLat = TextView(this)
             userLat.text = userInfo.location.latitude.toString()
             userLat.setTextColor(Color.BLACK)
+            userLat.gravity = Gravity.CENTER
             user.addView(userLat)
             val userLng = TextView(this)
             userLng.text = userInfo.location.longitude.toString()
             userLng.setTextColor(Color.BLACK)
+            userLng.gravity = Gravity.CENTER
             user.addView(userLng)
 
             table.addView(user)
