@@ -1,6 +1,7 @@
 package io2019.nfsfinder
 
 import android.Manifest
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.location.Address
 import android.location.Geocoder
@@ -22,9 +23,12 @@ import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
+import kotlinx.android.synthetic.main.activity_maps.*
 import java.io.IOException
 
 class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
+
+    lateinit var currentLocation: LatLng
 
     private val LOG_TAG = "MapsActivity"
     private val DEFAULT_MAP_ZOOM = 10f
@@ -51,6 +55,11 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         val mapFragment = supportFragmentManager
             .findFragmentById(R.id.map) as SupportMapFragment
         mapFragment.getMapAsync(this)
+
+        racersButton.setOnClickListener{
+            val intentRacers = Intent(this, RacersActivity::class.java)
+            startActivity(intentRacers)
+        }
     }
 
     /**
@@ -140,10 +149,11 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                 val location = mFusedLocationProviderClient.lastLocation
                 location.addOnCompleteListener {task ->
                     if (task.isSuccessful) {
-                        val currentLocation: Location = task.result
+                        val deviceLocation: Location = task.result
+                        currentLocation = LatLng(deviceLocation.latitude, deviceLocation.longitude)
 
                         moveCamera(
-                            LatLng(currentLocation.latitude, currentLocation.longitude),
+                            currentLocation,
                             DEFAULT_MAP_ZOOM,
                             MY_LOC_STR
                         )

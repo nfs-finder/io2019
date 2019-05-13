@@ -16,6 +16,17 @@ class LoginRepository(val dataSource: LoginDataSource) {
         onResultChange?.invoke(new)
     }
 
+    companion object {
+        @Volatile
+        private var INSTANCE: LoginRepository? = null
+        fun getInstance(dataSource: LoginDataSource) =
+                INSTANCE ?: synchronized(this) {
+                    INSTANCE ?: LoginRepository(dataSource).also {
+                        INSTANCE = it
+                    }
+                }
+    }
+
     var onResultChange: ((Result<LoggedInUser>?) -> Unit)? = null
 
     // in-memory cache of the loggedInUser object
