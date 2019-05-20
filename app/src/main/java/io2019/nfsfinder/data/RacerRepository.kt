@@ -22,11 +22,19 @@ class RacerRepository (val loginRepository: LoginRepository) {
 
     lateinit var currentLocation: LatLng
 
-    /*init {
-        val updateTask = fixedRateTimer(period = refreshTime) {
+    init {
+        /*
+        val updateMapTask = fixedRateTimer(period = refreshTime) {
             this@RacerRepository.updateRacerMap()
+        } */
+
+        val updateLocTask = fixedRateTimer(period = refreshTime) {
+            Log.d("updateLocTask", "siema wywoluje sie")
+            this@RacerRepository.updateLocation()
         }
-    }*/
+
+        Log.d(LOGTAG, "Initialized cyclic tasks")
+    }
 
     companion object {
         @Volatile
@@ -56,5 +64,18 @@ class RacerRepository (val loginRepository: LoginRepository) {
         }
 
         requestHandler.getRacers(loginRepository.user!!.userId, searchRadius, updateMap, errorReaction)
+    }
+
+    fun updateLocation() {
+        val errorReaction: (Exception) -> Unit = {
+            throw it
+        }
+
+        if (::currentLocation.isInitialized) {
+            val lat = currentLocation.latitude
+            val lng = currentLocation.longitude
+
+            requestHandler.updateLoc(loginRepository.user!!.userId, lat, lng, errorReaction)
+        }
     }
 }

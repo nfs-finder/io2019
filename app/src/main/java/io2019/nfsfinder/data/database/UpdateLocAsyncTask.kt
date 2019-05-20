@@ -42,7 +42,9 @@ class UpdateLocAsyncTask (val id: Int, val lat: Double, val lng: Double, val url
         jsonRequest.put("lat", lat)
 
         val req = RequestForEmpty(Request.Method.POST, url, jsonRequest,
-            Response.Listener {}, Response.ErrorListener { error ->
+            Response.Listener {
+                Log.d(LOGTAG, "Successfully updated location")
+            }, Response.ErrorListener { error ->
                 Log.d(LOGTAG, "Error in response")
                 val ex = IOException("Something went wrong")
                 errorReaction.invoke(ex)
