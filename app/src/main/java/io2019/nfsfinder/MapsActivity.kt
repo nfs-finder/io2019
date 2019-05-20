@@ -29,6 +29,7 @@ import io2019.nfsfinder.data.RacerRepository
 import io2019.nfsfinder.data.database.RequestHandler
 import kotlinx.android.synthetic.main.activity_maps.*
 import java.io.IOException
+import kotlin.concurrent.fixedRateTimer
 
 class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
@@ -37,6 +38,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     private val LOG_TAG = "MapsActivity"
     private val DEFAULT_MAP_ZOOM = 10f
     private val MY_LOC_STR = "My location"
+    private val refreshTime: Long = 1000
 
     private val FINE_LOCATION = Manifest.permission.ACCESS_FINE_LOCATION
     private val COARSE_LOCATION = Manifest.permission.ACCESS_COARSE_LOCATION
@@ -54,6 +56,8 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         mSearchText = findViewById(R.id.searchInput)
         mGps = findViewById(R.id.ic_gps)
 
+
+        getLocationPermission()
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         val mapFragment = supportFragmentManager
             .findFragmentById(R.id.map) as SupportMapFragment
@@ -65,11 +69,19 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         }
     }
 
+    init {
+        val updateLocTask = fixedRateTimer(period = refreshTime) {
+            Log.d("updateLocTask", "updating localization")
+            this@MapsActivity.deviceLocation(false)
+        }
+
+        Log.d(LOG_TAG, "Initialized cyclic tasks")
+    }
+
     /**
      * Manipulates the map once available.
      * This callback is triggered when the map is ready to be used.
-     * This is where we can add markers or lines, add listeners or move the camera. In this case,
-     * we just add a marker near Sydney, Australia.
+     * This is where we can add markers or lines, add listeners or move the camera.
      * If Google Play services is not installed on the device, the user will be prompted to install
      * it inside the SupportMapFragment. This method will only be triggered once the user has
      * installed Google Play services and returned to the app.
@@ -79,7 +91,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         mMap = googleMap
 
         if (mLocationPermsGranted) {
-            showDeviceLocation()
+            deviceLocation(true)
 
             if (ActivityCompat.checkSelfPermission(this, FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
                 && ActivityCompat.checkSelfPermission(this, COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -120,7 +132,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         }
 
         mGps.setOnClickListener {
-            showDeviceLocation()
+            deviceLocation(true)
         }
     }
 
@@ -144,32 +156,38 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         }
     }
 
-    private fun getDeviceLocation(): LatLng? {
+    private fun deviceLocation(display: Boolean) {
         mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this)
-        var result: LatLng? = null
+
         try {
             if (mLocationPermsGranted) {
                 val location = mFusedLocationProviderClient.lastLocation
                 location.addOnCompleteListener {task ->
                     if (task.isSuccessful) {
                         val deviceLocation: Location = task.result
-                        result = LatLng(deviceLocation.latitude, deviceLocation.longitude)
-                        RacerRepository.getInstance(LoginRepository.getInstance(LoginDataSource(RequestHandler())))
-                            .currentLocation = result as LatLng
+
+                        updateDeviceLocation(deviceLocation)
+
+                        if (display) {
+                            moveCamera(
+                                this.currentLocation,
+                                DEFAULT_MAP_ZOOM,
+                                MY_LOC_STR
+                            )
+                        }
                     } else {
-                        Toast.makeText(this, "Unable to get current location", Toast.LENGTH_LONG).show()
+                        Toast.makeText(this, "Unable to get current location", Toast.LENGTH_SHORT).show()
                     }
                 }
             }
         } catch (e: SecurityException) {
-            Log.e(LOG_TAG, "getDeviceLocation: SecurityException: " + e.message);
+            Log.e(LOG_TAG, "showDeviceLocation: SecurityException: " + e.message)
         }
-
-        return result
     }
 
-    private fun showDeviceLocation() {
-        moveCamera(this.getDeviceLocation()!!, DEFAULT_MAP_ZOOM, MY_LOC_STR)
+    private fun updateDeviceLocation(location: Location) {
+        this.currentLocation = LatLng(location.latitude, location.longitude)
+        RacerRepository.getInstance(LoginRepository(LoginDataSource(RequestHandler()))).currentLocation = this.currentLocation
     }
 
     private fun moveCamera(latLng: LatLng, zoom: Float, title: String) {
