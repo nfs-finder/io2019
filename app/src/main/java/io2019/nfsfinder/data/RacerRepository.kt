@@ -1,6 +1,7 @@
 package io2019.nfsfinder.data
 
 import android.util.Log
+import com.google.android.gms.maps.model.LatLng
 import io2019.nfsfinder.data.database.RequestHandler
 import java.util.*
 import kotlin.concurrent.fixedRateTimer
@@ -18,6 +19,8 @@ class RacerRepository (val loginRepository: LoginRepository) {
     }
 
     var afterUpdate: (() -> Unit)? = null
+
+    lateinit var currentLocation: LatLng
 
     /*init {
         val updateTask = fixedRateTimer(period = refreshTime) {

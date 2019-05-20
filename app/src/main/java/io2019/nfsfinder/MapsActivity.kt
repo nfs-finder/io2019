@@ -23,6 +23,10 @@ import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
+import io2019.nfsfinder.data.LoginDataSource
+import io2019.nfsfinder.data.LoginRepository
+import io2019.nfsfinder.data.RacerRepository
+import io2019.nfsfinder.data.database.RequestHandler
 import kotlinx.android.synthetic.main.activity_maps.*
 import java.io.IOException
 
@@ -50,7 +54,6 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         mSearchText = findViewById(R.id.searchInput)
         mGps = findViewById(R.id.ic_gps)
 
-        getLocationPermission()
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         val mapFragment = supportFragmentManager
             .findFragmentById(R.id.map) as SupportMapFragment
@@ -141,30 +144,32 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         }
     }
 
-    private fun showDeviceLocation() {
+    private fun getDeviceLocation(): LatLng? {
         mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this)
-
+        var result: LatLng? = null
         try {
             if (mLocationPermsGranted) {
                 val location = mFusedLocationProviderClient.lastLocation
                 location.addOnCompleteListener {task ->
                     if (task.isSuccessful) {
                         val deviceLocation: Location = task.result
-                        currentLocation = LatLng(deviceLocation.latitude, deviceLocation.longitude)
-
-                        moveCamera(
-                            currentLocation,
-                            DEFAULT_MAP_ZOOM,
-                            MY_LOC_STR
-                        )
+                        result = LatLng(deviceLocation.latitude, deviceLocation.longitude)
+                        RacerRepository.getInstance(LoginRepository.getInstance(LoginDataSource(RequestHandler())))
+                            .currentLocation = result as LatLng
                     } else {
-                        Toast.makeText(this, "Unable to get current location", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(this, "Unable to get current location", Toast.LENGTH_LONG).show()
                     }
                 }
             }
         } catch (e: SecurityException) {
-            Log.e(LOG_TAG, "showDeviceLocation: SecurityException: " + e.message)
+            Log.e(LOG_TAG, "getDeviceLocation: SecurityException: " + e.message);
         }
+
+        return result
+    }
+
+    private fun showDeviceLocation() {
+        moveCamera(this.getDeviceLocation()!!, DEFAULT_MAP_ZOOM, MY_LOC_STR)
     }
 
     private fun moveCamera(latLng: LatLng, zoom: Float, title: String) {
