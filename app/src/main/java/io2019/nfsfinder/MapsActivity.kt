@@ -26,6 +26,7 @@ import com.google.android.gms.maps.model.MarkerOptions
 import io2019.nfsfinder.data.LoginDataSource
 import io2019.nfsfinder.data.LoginRepository
 import io2019.nfsfinder.data.RacerRepository
+import io2019.nfsfinder.data.RacerRepositorySingleton
 import io2019.nfsfinder.data.database.RequestHandler
 import kotlinx.android.synthetic.main.activity_maps.*
 import java.io.IOException
@@ -38,7 +39,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     private val LOG_TAG = "MapsActivity"
     private val DEFAULT_MAP_ZOOM = 10f
     private val MY_LOC_STR = "My location"
-    private val refreshTime: Long = 1000
+    private val refreshTime: Long = 3000
 
     private val FINE_LOCATION = Manifest.permission.ACCESS_FINE_LOCATION
     private val COARSE_LOCATION = Manifest.permission.ACCESS_COARSE_LOCATION
@@ -71,7 +72,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
     init {
         val updateLocTask = fixedRateTimer(period = refreshTime) {
-            Log.d("updateLocTask", "updating localization")
+            Log.d("updateLocTask@MA", "updating localization")
             this@MapsActivity.deviceLocation(false)
         }
 
@@ -187,7 +188,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
     private fun updateDeviceLocation(location: Location) {
         this.currentLocation = LatLng(location.latitude, location.longitude)
-        RacerRepository.getInstance(LoginRepository(LoginDataSource(RequestHandler()))).currentLocation = this.currentLocation
+        RacerRepositorySingleton.getInstance().racerRepository.currentLocation = this.currentLocation
     }
 
     private fun moveCamera(latLng: LatLng, zoom: Float, title: String) {

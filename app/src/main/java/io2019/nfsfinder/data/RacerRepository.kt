@@ -7,7 +7,8 @@ import java.util.*
 import kotlin.concurrent.fixedRateTimer
 import kotlin.properties.Delegates
 
-class RacerRepository (val loginRepository: LoginRepository) {
+class RacerRepository {
+    val loginRepository: LoginRepository = LoginRepositorySingleton.getInstance().loginRepository
     val racerMap: MutableMap<Int, Racer> = HashMap()
     private var refreshTime: Long = 3000 //frequency of updates in milliseconds
     private var searchRadius: Long = 2000 //in meters
@@ -23,28 +24,15 @@ class RacerRepository (val loginRepository: LoginRepository) {
     lateinit var currentLocation: LatLng
 
     init {
-        /*
         val updateMapTask = fixedRateTimer(period = refreshTime) {
             this@RacerRepository.updateRacerMap()
-        } */
+        }
 
         val updateLocTask = fixedRateTimer(period = refreshTime) {
-            Log.d("updateLocTask", "siema wywoluje sie")
             this@RacerRepository.updateLocation()
         }
 
         Log.d(LOGTAG, "Initialized cyclic tasks")
-    }
-
-    companion object {
-        @Volatile
-        private var INSTANCE: RacerRepository? = null
-        fun getInstance(loginRepository: LoginRepository) =
-                INSTANCE ?: synchronized(this) {
-                    INSTANCE ?: RacerRepository(LoginRepository.getInstance(LoginDataSource(RequestHandler()))).also {
-                        INSTANCE = it
-                    }
-                }
     }
 
     fun updateRacerMap() {

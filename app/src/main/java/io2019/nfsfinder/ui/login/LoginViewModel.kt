@@ -9,9 +9,11 @@ import io2019.nfsfinder.data.Result
 import kotlin.properties.Delegates
 
 import io2019.nfsfinder.R
+import io2019.nfsfinder.data.LoginRepositorySingleton
 import io2019.nfsfinder.data.database.WrongCredentialsException
 
-class LoginViewModel(private val loginRepository: LoginRepository) : ViewModel() {
+class LoginViewModel : ViewModel() {
+    private val loginRepository: LoginRepository = LoginRepositorySingleton.getInstance().loginRepository
 
     private val _loginForm = MutableLiveData<LoginFormState>()
     val loginFormState: LiveData<LoginFormState> = _loginForm

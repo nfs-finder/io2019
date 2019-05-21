@@ -9,11 +9,8 @@ import android.view.Gravity
 import android.widget.TableLayout
 import android.widget.TableRow
 import android.widget.TextView
-import io2019.nfsfinder.data.LoginDataSource
-import io2019.nfsfinder.data.LoginRepository
+import io2019.nfsfinder.data.*
 import kotlinx.android.synthetic.main.activity_racers.*
-import io2019.nfsfinder.data.RacerRepository
-import io2019.nfsfinder.data.Result
 import io2019.nfsfinder.data.database.RequestHandler
 import io2019.nfsfinder.data.model.LoggedInUser
 import kotlin.concurrent.fixedRateTimer
@@ -54,47 +51,32 @@ class RacersActivity : AppCompatActivity() {
 
         table.addView(header)
 
-        val racerRepo = RacerRepository.getInstance(LoginRepository.getInstance(LoginDataSource(RequestHandler())))
+        val racerRepo = RacerRepositorySingleton.getInstance().racerRepository
 
-        val showRacers: (() -> Unit) = {
-            for ((_, userInfo) in racerRepo.racerMap) {
-                val user = TableRow(this@RacersActivity)
-                val userName = TextView(this@RacersActivity)
-                userName.text = userInfo.username
-                userName.setTextColor(Color.BLACK)
-                userName.gravity = Gravity.CENTER
-                user.addView(userName)
-                val userVehicle = TextView(this@RacersActivity)
-                userVehicle.text = userInfo.car
-                userVehicle.setTextColor(Color.BLACK)
-                userVehicle.gravity = Gravity.CENTER
-                user.addView(userVehicle)
-                val userLat = TextView(this@RacersActivity)
-                userLat.text = userInfo.location.latitude.toString()
-                userLat.setTextColor(Color.BLACK)
-                userLat.gravity = Gravity.CENTER
-                user.addView(userLat)
-                val userLng = TextView(this@RacersActivity)
-                userLng.text = userInfo.location.longitude.toString()
-                userLng.setTextColor(Color.BLACK)
-                userLng.gravity = Gravity.CENTER
-                user.addView(userLng)
+        for ((_, userInfo) in racerRepo.racerMap) {
+            val user = TableRow(this@RacersActivity)
+            val userName = TextView(this@RacersActivity)
+            userName.text = userInfo.username
+            userName.setTextColor(Color.BLACK)
+            userName.gravity = Gravity.CENTER
+            user.addView(userName)
+            val userVehicle = TextView(this@RacersActivity)
+            userVehicle.text = userInfo.car
+            userVehicle.setTextColor(Color.BLACK)
+            userVehicle.gravity = Gravity.CENTER
+            user.addView(userVehicle)
+            val userLat = TextView(this@RacersActivity)
+            userLat.text = userInfo.location.latitude.toString()
+            userLat.setTextColor(Color.BLACK)
+            userLat.gravity = Gravity.CENTER
+            user.addView(userLat)
+            val userLng = TextView(this@RacersActivity)
+            userLng.text = userInfo.location.longitude.toString()
+            userLng.setTextColor(Color.BLACK)
+            userLng.gravity = Gravity.CENTER
+            user.addView(userLng)
 
-                table.addView(user)
-            }
+            table.addView(user)
         }
-
-        val afterLogin: (Result<LoggedInUser>?) -> Unit = {
-            val res = it!!
-
-            if (res is Result.Success) {
-                racerRepo.updateRacerMap()
-            }
-        }
-
-        racerRepo.loginRepository.onResultChange = afterLogin
-        racerRepo.afterUpdate = showRacers
-
-        racerRepo.loginRepository.login("nfsfindertest@gmail.com", "test1nf$")
     }
 }

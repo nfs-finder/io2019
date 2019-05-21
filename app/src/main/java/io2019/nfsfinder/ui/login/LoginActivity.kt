@@ -65,6 +65,8 @@ class LoginActivity : AppCompatActivity() {
 
             if (loginResult.error != null) {
                 loading.visibility = View.GONE
+                login.text = "Sign in"
+                login.isEnabled = true
                 showLoginFailed(loginResult.error)
             }
 
@@ -74,10 +76,10 @@ class LoginActivity : AppCompatActivity() {
                 if (isServiceOK()) {
                     val intentMaps = Intent(this, MapsActivity::class.java)
                     startActivity(intentMaps)
+                    setResult(Activity.RESULT_OK)
+                    finish()
                 }
             }
-
-            setResult(Activity.RESULT_OK)
         })
 
         username.afterTextChanged {
