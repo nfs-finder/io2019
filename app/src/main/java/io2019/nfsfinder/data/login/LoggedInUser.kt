@@ -1,4 +1,4 @@
-package io2019.nfsfinder.data.model
+package io2019.nfsfinder.data.login
 
 /**
  * Data class that captures user information for logged in users retrieved from LoginRepository

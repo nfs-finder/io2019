@@ -24,7 +24,7 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
 import io2019.nfsfinder.R
-import io2019.nfsfinder.data.RacerRepositorySingleton
+import io2019.nfsfinder.data.maps.RacerRepositorySingleton
 import java.io.IOException
 import java.util.*
 import kotlin.concurrent.fixedRateTimer

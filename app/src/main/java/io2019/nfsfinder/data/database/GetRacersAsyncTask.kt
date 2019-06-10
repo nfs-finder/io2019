@@ -6,7 +6,7 @@ import com.android.volley.Request
 import com.android.volley.Response
 import com.android.volley.toolbox.JsonRequest
 import io2019.nfsfinder.NFSFinderApp
-import io2019.nfsfinder.data.Racer
+import io2019.nfsfinder.data.maps.Racer
 import org.json.JSONArray
 import org.json.JSONObject
 import java.io.IOException

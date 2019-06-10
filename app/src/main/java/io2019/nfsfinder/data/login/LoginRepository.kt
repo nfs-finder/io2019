@@ -1,7 +1,6 @@
-package io2019.nfsfinder.data
+package io2019.nfsfinder.data.login
 
 import android.util.Log
-import io2019.nfsfinder.data.model.LoggedInUser
 import kotlin.properties.Delegates
 
 /**
@@ -10,7 +9,8 @@ import kotlin.properties.Delegates
  */
 
 class LoginRepository {
-    private val dataSource: LoginDataSource = LoginDataSourceSingleton.getInstance().loginDataSource
+    private val dataSource: LoginDataSource = LoginDataSourceSingleton.getInstance()
+        .loginDataSource
     val LOGTAG = "LoginRepository"
 
     var loginResult: Result<LoggedInUser>? by Delegates.observable<Result<LoggedInUser>?>(null) { _, _, new ->

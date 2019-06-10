@@ -1,8 +1,10 @@
-package io2019.nfsfinder.data
+package io2019.nfsfinder.data.maps
 
 import android.util.Log
 import com.google.android.gms.maps.model.LatLng
 import io2019.nfsfinder.data.database.RequestHandler
+import io2019.nfsfinder.data.login.LoginRepository
+import io2019.nfsfinder.data.login.LoginRepositorySingleton
 import java.util.*
 import kotlin.concurrent.fixedRateTimer
 import kotlin.properties.Delegates

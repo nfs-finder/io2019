@@ -2,9 +2,6 @@ package io2019.nfsfinder.ui.login
 
 import android.arch.lifecycle.ViewModel
 import android.arch.lifecycle.ViewModelProvider
-import io2019.nfsfinder.data.LoginDataSource
-import io2019.nfsfinder.data.LoginRepository
-import io2019.nfsfinder.data.database.RequestHandler
 
 /**
  * ViewModel provider factory to instantiate LoginViewModel.

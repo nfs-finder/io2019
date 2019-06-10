@@ -1,4 +1,4 @@
-package io2019.nfsfinder.data
+package io2019.nfsfinder.data.login
 
 class LoginDataSourceSingleton {
     companion object {

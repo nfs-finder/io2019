@@ -1,4 +1,4 @@
-package io2019.nfsfinder.data
+package io2019.nfsfinder.data.maps
 
 class RacerRepositorySingleton {
     companion object {

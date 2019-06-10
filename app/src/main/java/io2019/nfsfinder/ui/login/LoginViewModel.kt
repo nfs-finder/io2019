@@ -4,12 +4,11 @@ import android.arch.lifecycle.LiveData
 import android.arch.lifecycle.MutableLiveData
 import android.arch.lifecycle.ViewModel
 import android.util.Patterns
-import io2019.nfsfinder.data.LoginRepository
-import io2019.nfsfinder.data.Result
-import kotlin.properties.Delegates
+import io2019.nfsfinder.data.login.LoginRepository
+import io2019.nfsfinder.data.login.Result
 
 import io2019.nfsfinder.R
-import io2019.nfsfinder.data.LoginRepositorySingleton
+import io2019.nfsfinder.data.login.LoginRepositorySingleton
 import io2019.nfsfinder.data.database.WrongCredentialsException
 
 class LoginViewModel : ViewModel() {

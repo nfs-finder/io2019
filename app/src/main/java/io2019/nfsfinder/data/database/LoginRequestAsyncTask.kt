@@ -7,7 +7,7 @@ import com.android.volley.*
 import com.android.volley.toolbox.JsonObjectRequest
 import com.android.volley.toolbox.JsonRequest
 import io2019.nfsfinder.NFSFinderApp
-import io2019.nfsfinder.data.model.LoggedInUser
+import io2019.nfsfinder.data.login.LoggedInUser
 import java.io.IOException
 
 class LoginRequestAsyncTask(val email: String, val password: String, val url: String,

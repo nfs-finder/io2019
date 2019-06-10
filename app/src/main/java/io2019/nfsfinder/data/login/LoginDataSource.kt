@@ -1,10 +1,8 @@
-package io2019.nfsfinder.data
+package io2019.nfsfinder.data.login
 
 import android.util.Log
-import io2019.nfsfinder.data.model.LoggedInUser
 import io2019.nfsfinder.data.database.RequestHandler
 import io2019.nfsfinder.data.database.RequestHandlerSingleton
-import java.io.IOException
 import kotlin.properties.Delegates
 
 /**

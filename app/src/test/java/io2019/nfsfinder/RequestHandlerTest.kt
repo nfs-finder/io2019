@@ -1,11 +1,5 @@
 package io2019.nfsfinder
 
-import io2019.nfsfinder.data.model.LoggedInUser
-import io2019.nfsfinder.data.database.RequestHandler
-import org.junit.Test
-
-import org.junit.Assert.*
-
 class RequestHandlerTest {
     /*private val requestHandler = RequestHandler()
 

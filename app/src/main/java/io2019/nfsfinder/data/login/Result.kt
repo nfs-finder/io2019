@@ -1,4 +1,4 @@
-package io2019.nfsfinder.data
+package io2019.nfsfinder.data.login
 
 /**
  * A generic class that holds a value with its loading status.

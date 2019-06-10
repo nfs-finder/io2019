@@ -1,8 +1,8 @@
 package io2019.nfsfinder.data.database
 
 import android.util.Log
-import io2019.nfsfinder.data.Racer
-import io2019.nfsfinder.data.model.LoggedInUser
+import io2019.nfsfinder.data.maps.Racer
+import io2019.nfsfinder.data.login.LoggedInUser
 
 
 class RequestHandler {

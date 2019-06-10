@@ -1,4 +1,4 @@
-package io2019.nfsfinder.data
+package io2019.nfsfinder.data.maps
 
 import com.google.android.gms.maps.model.LatLng
 
