@@ -39,7 +39,7 @@
                 android:value="@integer/google_play_services_version" />
 
         <activity
-                android:name=".MapsActivity"
+                android:name=".ui.maps.MapsActivity"
                 android:label="@string/title_activity_maps">
         </activity>
         <activity

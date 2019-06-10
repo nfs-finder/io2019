@@ -20,7 +20,7 @@ import android.widget.ProgressBar
 import android.widget.Toast
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.GoogleApiAvailability
-import io2019.nfsfinder.MapsActivity
+import io2019.nfsfinder.ui.maps.MapsActivity
 
 import io2019.nfsfinder.R
 import kotlinx.android.synthetic.main.activity_login.*

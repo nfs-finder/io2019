@@ -1,7 +1,6 @@
-package io2019.nfsfinder
+package io2019.nfsfinder.ui.maps
 
 import android.Manifest
-import android.content.Intent
 import android.content.pm.PackageManager
 import android.location.Address
 import android.location.Geocoder
@@ -24,8 +23,8 @@ import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
+import io2019.nfsfinder.R
 import io2019.nfsfinder.data.RacerRepositorySingleton
-import kotlinx.android.synthetic.main.activity_maps.*
 import java.io.IOException
 import java.util.*
 import kotlin.concurrent.fixedRateTimer
