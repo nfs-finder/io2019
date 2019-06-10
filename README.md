@@ -75,7 +75,7 @@ To run app:
 	
 	7. If the user agrees the race is set for both of them.
 
- **2.  Add car.**
+ **3.  Add car.**
 	 The primary actor is normal user who wants to add new car to his account.
 	 
 	1.User logs in.
