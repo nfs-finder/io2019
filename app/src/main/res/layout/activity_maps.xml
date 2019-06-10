@@ -62,16 +62,4 @@
             android:src="@drawable/ic_gps"
             android:contentDescription="@string/gps_desc"/>
 
-    <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="10dp"
-            android:layout_marginLeft="@dimen/map_margins"
-            android:layout_marginRight="@dimen/map_margins"
-            android:elevation="200dp"
-            android:id="@+id/racersButton"
-            android:layout_alignParentBottom="true"
-            android:layout_centerHorizontal="true"
-            android:text="Racers"/>
-
 </RelativeLayout>

@@ -45,6 +45,7 @@ class LoginActivity : AppCompatActivity() {
         loginViewModel = ViewModelProviders.of(this, LoginViewModelFactory())
             .get(LoginViewModel::class.java)
 
+
         loginViewModel.loginFormState.observe(this@LoginActivity, Observer {
             val loginState = it ?: return@Observer
 
@@ -113,7 +114,7 @@ class LoginActivity : AppCompatActivity() {
                 login.isEnabled = false
                 login.text = "Logging in"
                 val inputMethodManager: InputMethodManager = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-                inputMethodManager.hideSoftInputFromWindow(currentFocus.windowToken, InputMethodManager.HIDE_NOT_ALWAYS)
+                inputMethodManager.hideSoftInputFromWindow(currentFocus?.windowToken, InputMethodManager.HIDE_NOT_ALWAYS)
                 loginViewModel.login(username.text.toString(), password.text.toString())
             }
         }

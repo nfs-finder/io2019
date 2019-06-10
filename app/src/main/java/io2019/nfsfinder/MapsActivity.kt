@@ -24,11 +24,7 @@ import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
-import io2019.nfsfinder.data.LoginDataSource
-import io2019.nfsfinder.data.LoginRepository
-import io2019.nfsfinder.data.RacerRepository
 import io2019.nfsfinder.data.RacerRepositorySingleton
-import io2019.nfsfinder.data.database.RequestHandler
 import kotlinx.android.synthetic.main.activity_maps.*
 import java.io.IOException
 import java.util.*
@@ -47,7 +43,8 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     private val COARSE_LOCATION = Manifest.permission.ACCESS_COARSE_LOCATION
     private val LOCATION_PERM_REQUEST_CODE = 1234
     private var mLocationPermsGranted = false
-    private var init = false
+    private var zoom = true
+    private var display = true
     private val markerList: LinkedList<Marker> = LinkedList()
 
     private lateinit var mMap: GoogleMap
@@ -68,18 +65,17 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         val mapFragment = supportFragmentManager
             .findFragmentById(R.id.map) as SupportMapFragment
         mapFragment.getMapAsync(this)
-
-        racersButton.setOnClickListener{
-            val intentRacers = Intent(this, RacersActivity::class.java)
-            startActivity(intentRacers)
-        }
     }
 
     init {
         val updateLocTask = fixedRateTimer(period = refreshTime) {
             Log.d("updateLocTask@MA", "updating localization")
-            this@MapsActivity.deviceLocation(true)
-            this@MapsActivity.displayRacers()
+            this@MapsActivity.deviceLocation()
+            this@MapsActivity.runOnUiThread {
+                run {
+                    displayRacers()
+                }
+            }
         }
 
         Log.d(LOG_TAG, "Initialized cyclic tasks")
@@ -98,7 +94,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         mMap = googleMap
 
         if (mLocationPermsGranted) {
-            deviceLocation(true)
+            deviceLocation()
 
             if (ActivityCompat.checkSelfPermission(this, FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
                 && ActivityCompat.checkSelfPermission(this, COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -107,6 +103,11 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
             mMap.isMyLocationEnabled = true
             mMap.uiSettings.isMyLocationButtonEnabled = false
+
+            mMap.setOnCameraMoveListener {
+                zoom = false
+                display = false
+            }
             searchInit()
         }
     }
@@ -139,8 +140,9 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         }
 
         mGps.setOnClickListener {
-            init = false
-            deviceLocation(true)
+            zoom = true
+            display = true
+            deviceLocation()
         }
     }
 
@@ -164,7 +166,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         }
     }
 
-    private fun deviceLocation(display: Boolean) {
+    private fun deviceLocation() {
         mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this)
 
         try {
@@ -177,13 +179,13 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                         updateDeviceLocation(deviceLocation)
 
                         if (display) {
-                            if (!init) {
+                            if (zoom) {
                                 moveCamera(
                                     this.currentLocation,
                                     DEFAULT_MAP_ZOOM,
                                     MY_LOC_STR
                                 )
-                                init = true
+                                zoom = false
                             } else {
                                 moveCamera(
                                     this.currentLocation,
@@ -211,6 +213,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, zoom))
 
         if (title != MY_LOC_STR) {
+            this.zoom = false
             val options = MarkerOptions().position(latLng).title(title)
             geoLocMarker = mMap.addMarker(options)
         }
@@ -237,8 +240,8 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         var markerTitle: String
         for ((_, racer) in racers) {
             markerTitle = racer.username + ", " + racer.car
-//            racerMarker = mMap.addMarker(MarkerOptions().position(racer.location).title(markerTitle))
-//            markerList.addLast(racerMarker)
+            racerMarker = mMap.addMarker(MarkerOptions().position(racer.location).title(markerTitle))
+            markerList.addLast(racerMarker)
         }
     }
 
