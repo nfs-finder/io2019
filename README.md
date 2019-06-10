@@ -55,7 +55,7 @@ To run app:
 	
 	7. User may retake the race now or try to find another partner.
 
- **2.  Find friends.**
+ **3.  Find friends.**
  
 	 The primary actor is normal user with network of his contacts in the app. The user my want to check his contacts localization or even race with them.
 	 
