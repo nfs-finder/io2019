@@ -1,6 +1,7 @@
 package io2019.nfsfinder
 
 import android.Manifest
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.location.Address
 import android.location.Geocoder
@@ -21,30 +22,43 @@ import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
+import io2019.nfsfinder.data.RacerRepositorySingleton
+import kotlinx.android.synthetic.main.activity_maps.*
 import java.io.IOException
+import java.util.*
+import kotlin.concurrent.fixedRateTimer
 
 class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
+    lateinit var currentLocation: LatLng
+
     private val LOG_TAG = "MapsActivity"
-    private val DEFAULT_MAP_ZOOM = 10f
+    private val DEFAULT_MAP_ZOOM = 15f
     private val MY_LOC_STR = "My location"
+    private val refreshTime: Long = 3000
 
     private val FINE_LOCATION = Manifest.permission.ACCESS_FINE_LOCATION
     private val COARSE_LOCATION = Manifest.permission.ACCESS_COARSE_LOCATION
     private val LOCATION_PERM_REQUEST_CODE = 1234
     private var mLocationPermsGranted = false
+    private var zoom = true
+    private var display = true
+    private val markerList: LinkedList<Marker> = LinkedList()
 
     private lateinit var mMap: GoogleMap
     private lateinit var mFusedLocationProviderClient: FusedLocationProviderClient
     private lateinit var mSearchText: EditText
     private lateinit var mGps: ImageView
+    private lateinit var geoLocMarker: Marker
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_maps)
         mSearchText = findViewById(R.id.searchInput)
         mGps = findViewById(R.id.ic_gps)
+
 
         getLocationPermission()
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
@@ -53,11 +67,24 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         mapFragment.getMapAsync(this)
     }
 
+    init {
+        val updateLocTask = fixedRateTimer(period = refreshTime) {
+            Log.d("updateLocTask@MA", "updating localization")
+            this@MapsActivity.deviceLocation()
+            this@MapsActivity.runOnUiThread {
+                run {
+                    displayRacers()
+                }
+            }
+        }
+
+        Log.d(LOG_TAG, "Initialized cyclic tasks")
+    }
+
     /**
      * Manipulates the map once available.
      * This callback is triggered when the map is ready to be used.
-     * This is where we can add markers or lines, add listeners or move the camera. In this case,
-     * we just add a marker near Sydney, Australia.
+     * This is where we can add markers or lines, add listeners or move the camera.
      * If Google Play services is not installed on the device, the user will be prompted to install
      * it inside the SupportMapFragment. This method will only be triggered once the user has
      * installed Google Play services and returned to the app.
@@ -67,7 +94,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         mMap = googleMap
 
         if (mLocationPermsGranted) {
-            showDeviceLocation()
+            deviceLocation()
 
             if (ActivityCompat.checkSelfPermission(this, FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
                 && ActivityCompat.checkSelfPermission(this, COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -76,6 +103,11 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
             mMap.isMyLocationEnabled = true
             mMap.uiSettings.isMyLocationButtonEnabled = false
+
+            mMap.setOnCameraMoveListener {
+                zoom = false
+                display = false
+            }
             searchInit()
         }
     }
@@ -108,7 +140,9 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         }
 
         mGps.setOnClickListener {
-            showDeviceLocation()
+            zoom = true
+            display = true
+            deviceLocation()
         }
     }
 
@@ -132,7 +166,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         }
     }
 
-    private fun showDeviceLocation() {
+    private fun deviceLocation() {
         mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this)
 
         try {
@@ -140,13 +174,26 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                 val location = mFusedLocationProviderClient.lastLocation
                 location.addOnCompleteListener {task ->
                     if (task.isSuccessful) {
-                        val currentLocation: Location = task.result
+                        val deviceLocation: Location = task.result
 
-                        moveCamera(
-                            LatLng(currentLocation.latitude, currentLocation.longitude),
-                            DEFAULT_MAP_ZOOM,
-                            MY_LOC_STR
-                        )
+                        updateDeviceLocation(deviceLocation)
+
+                        if (display) {
+                            if (zoom) {
+                                moveCamera(
+                                    this.currentLocation,
+                                    DEFAULT_MAP_ZOOM,
+                                    MY_LOC_STR
+                                )
+                                zoom = false
+                            } else {
+                                moveCamera(
+                                    this.currentLocation,
+                                    mMap.cameraPosition.zoom,
+                                    MY_LOC_STR
+                                )
+                            }
+                        }
                     } else {
                         Toast.makeText(this, "Unable to get current location", Toast.LENGTH_SHORT).show()
                     }
@@ -157,12 +204,18 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         }
     }
 
+    private fun updateDeviceLocation(location: Location) {
+        this.currentLocation = LatLng(location.latitude, location.longitude)
+        RacerRepositorySingleton.getInstance().racerRepository.currentLocation = this.currentLocation
+    }
+
     private fun moveCamera(latLng: LatLng, zoom: Float, title: String) {
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, zoom))
 
         if (title != MY_LOC_STR) {
+            this.zoom = false
             val options = MarkerOptions().position(latLng).title(title)
-            mMap.addMarker(options)
+            geoLocMarker = mMap.addMarker(options)
         }
     }
 
@@ -178,5 +231,25 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         } else {
             ActivityCompat.requestPermissions(this, permissions, LOCATION_PERM_REQUEST_CODE)
         }
+    }
+
+    private fun displayRacers() {
+        val racers = RacerRepositorySingleton.getInstance().racerRepository.racerMap
+        clearMarkers()
+        var racerMarker: Marker
+        var markerTitle: String
+        for ((_, racer) in racers) {
+            markerTitle = racer.username + ", " + racer.car
+            racerMarker = mMap.addMarker(MarkerOptions().position(racer.location).title(markerTitle))
+            markerList.addLast(racerMarker)
+        }
+    }
+
+    private fun clearMarkers() {
+        for (marker in markerList) {
+            marker.remove()
+        }
+
+        markerList.clear()
     }
 }

@@ -3,7 +3,7 @@
     <string name="title_activity_login">Sign in</string>
     <string name="prompt_email">Email</string>
     <string name="prompt_password">Password</string>
-    <string name="action_sign_in">Sign in or register</string>
+    <string name="action_sign_in">Sign in</string>
     <string name="action_sign_in_short">Sign in</string>
     <string name="welcome">"Welcome"</string>
     <string name="invalid_username">Not a valid username</string>
@@ -14,4 +14,10 @@
     <string name="search_hint">Enter Address</string>
     <string name="magnifier_desc">Inactive search icon</string>
     <string name="gps_desc">Center on device location</string>
+    <string name="racers_label">Available opponents</string>
+    <string name="map">Map</string>
+    <string name="table_header_racer">Racer</string>
+    <string name="table_header_vehicle">Vehicle</string>
+    <string name="table_header_latitude">Latitude</string>
+    <string name="table_header_longitude">Longitude</string>
 </resources>

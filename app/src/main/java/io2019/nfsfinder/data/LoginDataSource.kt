@@ -3,13 +3,15 @@ package io2019.nfsfinder.data
 import android.util.Log
 import io2019.nfsfinder.data.model.LoggedInUser
 import io2019.nfsfinder.data.database.RequestHandler
+import io2019.nfsfinder.data.database.RequestHandlerSingleton
 import java.io.IOException
 import kotlin.properties.Delegates
 
 /**
  * Class that handles authentication w/ login credentials and retrieves user information.
  */
-class LoginDataSource (private val handler: RequestHandler) {
+class LoginDataSource {
+    private val handler: RequestHandler = RequestHandlerSingleton.getInstance().requestHandler
     val LOGTAG = "LoginDataSource"
 
     var loginResult: Result<LoggedInUser>? by Delegates.observable<Result<LoggedInUser>?>(null) { _, _, new ->

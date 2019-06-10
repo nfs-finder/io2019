@@ -9,7 +9,8 @@ import kotlin.properties.Delegates
  * maintains an in-memory cache of login status and user credentials information.
  */
 
-class LoginRepository(val dataSource: LoginDataSource) {
+class LoginRepository {
+    private val dataSource: LoginDataSource = LoginDataSourceSingleton.getInstance().loginDataSource
     val LOGTAG = "LoginRepository"
 
     var loginResult: Result<LoggedInUser>? by Delegates.observable<Result<LoggedInUser>?>(null) { _, _, new ->

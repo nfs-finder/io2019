@@ -61,4 +61,5 @@
             android:id="@+id/ic_gps"
             android:src="@drawable/ic_gps"
             android:contentDescription="@string/gps_desc"/>
+
 </RelativeLayout>

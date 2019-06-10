@@ -3,23 +3,34 @@ package io2019.nfsfinder.ui.login
 import android.app.Activity
 import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProviders
+import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.support.annotation.StringRes
 import android.support.v7.app.AppCompatActivity
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.view.View
 import android.view.inputmethod.EditorInfo
+import android.view.inputmethod.InputMethodManager
 import android.widget.Button
 import android.widget.EditText
 import android.widget.ProgressBar
 import android.widget.Toast
+import com.google.android.gms.common.ConnectionResult
+import com.google.android.gms.common.GoogleApiAvailability
+import io2019.nfsfinder.MapsActivity
 
 import io2019.nfsfinder.R
+import kotlinx.android.synthetic.main.activity_login.*
 
 class LoginActivity : AppCompatActivity() {
 
     private lateinit var loginViewModel: LoginViewModel
+
+    private val LOG_TAG = "LoginActivity"
+    private val ERROR_DIALOG_REQUEST = 9001
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -33,6 +44,7 @@ class LoginActivity : AppCompatActivity() {
 
         loginViewModel = ViewModelProviders.of(this, LoginViewModelFactory())
             .get(LoginViewModel::class.java)
+
 
         loginViewModel.loginFormState.observe(this@LoginActivity, Observer {
             val loginState = it ?: return@Observer
@@ -51,17 +63,24 @@ class LoginActivity : AppCompatActivity() {
         loginViewModel.loginResult.observe(this@LoginActivity, Observer {
             val loginResult = it ?: return@Observer
 
-            loading.visibility = View.GONE
+
             if (loginResult.error != null) {
+                loading.visibility = View.GONE
+                login.text = "Sign in"
+                login.isEnabled = true
                 showLoginFailed(loginResult.error)
             }
+
             if (loginResult.success != null) {
                 updateUiWithUser(loginResult.success)
-            }
-            setResult(Activity.RESULT_OK)
 
-            //Complete and destroy login activity once successful
-            finish()
+                if (isServiceOK()) {
+                    val intentMaps = Intent(this, MapsActivity::class.java)
+                    startActivity(intentMaps)
+                    setResult(Activity.RESULT_OK)
+                    finish()
+                }
+            }
         })
 
         username.afterTextChanged {
@@ -92,6 +111,10 @@ class LoginActivity : AppCompatActivity() {
 
             login.setOnClickListener {
                 loading.visibility = View.VISIBLE
+                login.isEnabled = false
+                login.text = "Logging in"
+                val inputMethodManager: InputMethodManager = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+                inputMethodManager.hideSoftInputFromWindow(currentFocus?.windowToken, InputMethodManager.HIDE_NOT_ALWAYS)
                 loginViewModel.login(username.text.toString(), password.text.toString())
             }
         }
@@ -111,6 +134,28 @@ class LoginActivity : AppCompatActivity() {
     private fun showLoginFailed(@StringRes errorString: Int) {
         Toast.makeText(applicationContext, errorString, Toast.LENGTH_SHORT).show()
     }
+
+    private fun isServiceOK() : Boolean {
+        Log.d(LOG_TAG, "isServiceOK: checking google service version")
+        login.text = "Checking Service Status"
+
+        val available = GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(this)
+        loading.visibility = View.GONE
+        when {
+            available == ConnectionResult.SUCCESS -> {
+                Log.d(LOG_TAG, "isServiceOK: Google Play Services working")
+                return true
+            }
+            GoogleApiAvailability.getInstance().isUserResolvableError(available) -> {
+                Log.d(LOG_TAG, "isServiceOK: an resolvable error occured")
+                val dialog = GoogleApiAvailability.getInstance().getErrorDialog(this, available, ERROR_DIALOG_REQUEST)
+                dialog.show()
+            }
+            else -> Toast.makeText(this, "You can't take map requests", Toast.LENGTH_SHORT).show()
+        }
+
+        return false
+    }
 }
 
 /**
@@ -127,3 +172,4 @@ fun EditText.afterTextChanged(afterTextChanged: (String) -> Unit) {
         override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {}
     })
 }
+
