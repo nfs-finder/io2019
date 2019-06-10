@@ -55,7 +55,7 @@ To run app:
 	
 	7. User may retake the race now or try to find another partner.
 
- **3.  Find friends.**
+ **2.  Find friends.**
  
 	 The primary actor is normal user with network of his contacts in the app. The user my want to check his contacts localization or even race with them.
 	 
@@ -75,7 +75,7 @@ To run app:
 	
 	7. If the user agrees the race is set for both of them.
 
- **2.  Add car.**
+ **3.  Add car.**
 	 The primary actor is normal user who wants to add new car to his account.
 	 
 	1.User logs in.
