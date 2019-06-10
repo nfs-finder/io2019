@@ -8,7 +8,6 @@ To run app:
  - run it on Android Virtual Device using API 26
  
 ## Functions
-
 **1.  Finding race partners:**
 When user wants to race with nearby users the app finds them and provides the route of the race.
 	
@@ -16,8 +15,8 @@ When user wants to race with nearby users the app finds them and provides the ro
 During group travels, when user wants to share information about the group members' localization the app
 provides him with it.
 	
-**3. Finding friends localization.** 
-In social model user can see the localization of his friends.
+**3. Finding friends location.** 
+In social model user can see the location of his friends.
 	
 **4. Finding jogging partners.**
 When user wants to jog with nearby users the app finds them and provides the route for run.
@@ -63,7 +62,7 @@ When user wants to jog with nearby users the app finds them and provides the rou
 	
 	Optional: race with friend.
 	
-	5. User clicks the friend location pin.
+	5. The user clicks the friend location pin.
 	
 	6. The app asks user if he wants to propose this user a race.
 	
