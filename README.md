@@ -7,6 +7,9 @@ To run app:
  - build it using Gradle
  - run it on Android Virtual Device using API 26
  
+To run server:
+ - put the server/api folder in place where HTTP server is running.
+ 
 ## Functions
 **1.  Finding race partners:**
 When user wants to race with nearby users the app finds them and provides the route of the race.
