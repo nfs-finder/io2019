@@ -8,7 +8,8 @@ To run app:
  - run it on Android Virtual Device using API 26
  
 To run server:
- - put the server/api folder in place where HTTP server is running.
+ - put the server/api folder in place where HTTP server is running
+ - put proper database credentials in the file server/api/config/dbconfig.json
  
 ## Functions
 **1.  Finding race partners:**
