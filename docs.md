@@ -14,3 +14,17 @@ The source code for app is located in the directory `io2019/app/src/`.  It conta
   - layout - definitions of layouts of activities used in app
   - values - definitions of resources such as colors or strings
 ```
+## Request handling
+Each request is a JSON object containing data needed to perform requested operation. 
+
+Example (successful login):
+```
+Client sends: {"email": correct_email, "password": correct_pswd}
+Client receives: response code 200 OK and JSON {"id": user_id, "username": username}
+```
+Example (failed login):
+```
+Client sends: {"email": email, "password": wrong_pswd}
+Client receives: response code 401 Unauthorized and message "Wrong credentials!"
+```
+The request handling is done by the class Request Handler. The function which is responsible of executing a thread to process given request should be provided with proper callbacks in case of success or error.
