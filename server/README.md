@@ -13,18 +13,19 @@ File structure of our servers looks like this:
 Database class constructor takes a path to JSON file from which it will extract credentials to connect to database. The file should be a dictionary with four keys: `host`, `db_name`, `username`, `password`. Each key should have a string value.
 
 ## Format of requests
-Each request is a JSON object containing data needed to perform requested operation. Example (successful login):
-```mermaid
-graph LR
-A[client] -- "{'email': email, 'password': password}" --> B[server]
-B -- "response: 200 OK, {'id': id, 'username': username}" --> A
+Each request is a JSON object containing data needed to perform requested operation. 
+
+Example (successful login):
+```
+Client sends: {"email": correct_email, "password": correct_pswd}
+Client receives: response code 200 OK and JSON {"id": user_id, "username": username}
 ```
 Example (failed login):
-```mermaid
-graph LR
-A[client] -- "'email': email, 'password': password" --> B[server]
-B -- "response: 401 OK, Wrong credentials!" --> A
 ```
+Client sends: {"email": email, "password": wrong_pswd}
+Client receives: response code 401 Unauthorized and message "Wrong credentials!"
+```
+
 ## Database tables
 For further developing we assume that database we connect to has three tables - `users`, `users_cars`, `races_history`. 
 ### users table:
