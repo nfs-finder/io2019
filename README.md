@@ -90,3 +90,5 @@ When user wants to jog with nearby users the app finds them and provides the rou
 	5. The user types in the car model.
 	
 	6. The app saves car model data in the database of user cars.
+
+![Poster](/.docs_resources/nfs.png)
