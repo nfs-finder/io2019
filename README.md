@@ -11,6 +11,9 @@ To run server:
  - put the server/api folder in place where HTTP server is running
  - put proper database credentials in the file server/api/config/dbconfig.json
  
+## Application flowchart
+![Image of Flowchart](/.docs_resources/NFSFinderFlowchart.jpg)
+ 
 ## Functions
 **1.  Finding race partners:**
 When user wants to race with nearby users the app finds them and provides the route of the race.
