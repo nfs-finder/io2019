@@ -1,8 +1,8 @@
 package io2019.nfsfinder.ui.login
 
-import android.arch.lifecycle.LiveData
-import android.arch.lifecycle.MutableLiveData
-import android.arch.lifecycle.ViewModel
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
 import android.util.Patterns
 import io2019.nfsfinder.data.login.LoginRepository
 import io2019.nfsfinder.data.login.Result
