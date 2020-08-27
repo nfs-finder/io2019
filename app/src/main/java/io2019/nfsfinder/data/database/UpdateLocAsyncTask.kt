@@ -24,7 +24,7 @@ class UpdateLocAsyncTask (val id: Int, val lat: Double, val lng: Double, val url
             var res = response
 
             try {
-                if (res.data.size == 0) {
+                if (res.data.isEmpty()) {
                     val responseData = "{}".toByteArray(charset("UTF8"))
                     res = NetworkResponse(response.statusCode, responseData, response.headers, response.notModified)
                 }

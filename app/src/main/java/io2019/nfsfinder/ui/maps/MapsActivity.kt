@@ -31,7 +31,7 @@ import kotlin.concurrent.fixedRateTimer
 
 class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
-    lateinit var currentLocation: LatLng
+    private lateinit var currentLocation: LatLng
 
     private val LOG_TAG = "MapsActivity"
     private val DEFAULT_MAP_ZOOM = 15f
