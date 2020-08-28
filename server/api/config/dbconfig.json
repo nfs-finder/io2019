@@ -1,5 +1,5 @@
 {
-    "host": "nfsfinderdb.c9gtwnwynhda.us-east-2.rds.amazonaws.com",
+    "host": "nfsfinderdb-jnp2.c9gtwnwynhda.us-east-2.rds.amazonaws.com",
     "db_name": "nfsfinderdb",
     "username": "app_handler",
     "password": "nfsf!nd3r"
