@@ -37,10 +37,11 @@ class LoginRequestAsyncTask(val email: String, val password: String, val url: St
             },
             Response.ErrorListener {error ->
                 Log.d(LOGTAG, "Error in authorisation")
+                Log.d(LOGTAG, error.message.toString())
                 val ex: Exception
                 val responseNum = error?.networkResponse?.statusCode ?: -1
 
-                if (responseNum == 403) {
+                if (responseNum == 401) {
                     ex = WrongCredentialsException()
                 } else {
                     ex = IOException("Something went wrong!")
