@@ -1,6 +1,7 @@
 package io2019.nfsfinder.ui.maps
 
 import android.Manifest
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.location.Address
 import android.location.Geocoder
@@ -10,6 +11,7 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.appcompat.app.AppCompatActivity
 import android.util.Log
+import android.view.KeyEvent
 import android.view.inputmethod.EditorInfo
 import android.widget.EditText
 import android.widget.ImageView
@@ -20,9 +22,11 @@ import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
+import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
+import io2019.nfsfinder.MainActivity
 import io2019.nfsfinder.R
 import io2019.nfsfinder.data.maps.RacerRepositorySingleton
 import java.io.IOException
@@ -66,20 +70,6 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         mapFragment.getMapAsync(this)
     }
 
-    init {
-        val updateLocTask = fixedRateTimer(period = refreshTime) {
-            Log.d("updateLocTask@MA", "updating localization")
-            this@MapsActivity.deviceLocation()
-            this@MapsActivity.runOnUiThread {
-                run {
-                    displayRacers()
-                }
-            }
-        }
-
-        Log.d(LOG_TAG, "Initialized cyclic tasks")
-    }
-
     /**
      * Manipulates the map once available.
      * This callback is triggered when the map is ready to be used.
@@ -94,6 +84,19 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
         if (mLocationPermsGranted) {
             deviceLocation()
+
+
+            fixedRateTimer(period = refreshTime) {
+                Log.d("updateLocTask@MA", "updating localization")
+                this@MapsActivity.deviceLocation()
+                this@MapsActivity.runOnUiThread {
+                    run {
+                        displayRacers()
+                    }
+                }
+            }
+
+            Log.d(LOG_TAG, "Initialized cyclic tasks")
 
             if (ActivityCompat.checkSelfPermission(this, FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
                 && ActivityCompat.checkSelfPermission(this, COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -110,6 +113,19 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
             searchInit()
         }
     }
+
+//    override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
+//        if (keyCode == KeyEvent.KEYCODE_BACK && event?.repeatCount == 0) {
+//            Log.d(LOG_TAG, "Back called")
+//
+//            onReturnPressed()
+//        }
+//        return super.onKeyDown(keyCode, event)
+//    }
+//
+//    private fun onReturnPressed() {
+//        finish()
+//    }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
         mLocationPermsGranted = false
@@ -167,10 +183,6 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
     private fun deviceLocation() {
         mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this)
-
-        for (marker in markerList) {
-
-        }
 
         try {
             if (mLocationPermsGranted) {
@@ -245,8 +257,13 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         var markerTitle: String
         for ((_, racer) in racers) {
             markerTitle = racer.username + ", " + racer.car
-            racerMarker = mMap.addMarker(MarkerOptions().position(racer.location).title(markerTitle))
+            racerMarker = mMap.addMarker(MarkerOptions()
+                .position(racer.location)
+                .title(markerTitle)
+                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ROSE))
+            )
             markerList.addLast(racerMarker)
+            Log.e(LOG_TAG, markerList.toString())
         }
     }
 
