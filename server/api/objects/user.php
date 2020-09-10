@@ -28,7 +28,7 @@ class User {
             $this->id = $row["id"];
             $this->username = $row["username"];
         } else {
-            throw new WrongCredentialsExceptions("Wrong email or password!");
+            throw new WrongCredentialsExceptions($query);
         }
     }
 }

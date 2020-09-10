@@ -17,7 +17,7 @@ $db = $database->getConnection();
 // get calling user id and radius
 $data = json_decode(file_get_contents("php://input"));
 
-$query = "SELECT B.id as id, B.username as username, ST_X(B.location) as lng, ST_Y(B.location) as lat, B.active_car_name 
+$query = "SELECT B.id as id, B.username as username, ST_X(B.location) as lat, ST_Y(B.location) as lng, B.active_car_name 
      FROM users A, users B WHERE A.id = " . $data->id . " AND NOT B.id = " . $data->id . "
      AND ST_DISTANCE_SPHERE(A.location, B.location) <= " . $data->radius . ";";
 

@@ -1,6 +1,6 @@
 {
-    "host": "nfsfinderdb-jnp2.c9gtwnwynhda.us-east-2.rds.amazonaws.com",
-    "db_name": "nfsfinderdb",
-    "username": "app_handler",
-    "password": "nfsf!nd3r"
+    "host": "mysql.cba.pl",
+    "db_name": "najlepszesuchary_cba_pl",
+    "username": "k4ve",
+    "password": "nfsf!nd3R"
 }
