@@ -49,6 +49,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     private var zoom = true
     private var display = true
     private val markerList: LinkedList<Marker> = LinkedList()
+    private var updateLocTask: Timer? = null
 
     private lateinit var mMap: GoogleMap
     private lateinit var mFusedLocationProviderClient: FusedLocationProviderClient
@@ -68,6 +69,8 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         val mapFragment = supportFragmentManager
             .findFragmentById(R.id.map) as SupportMapFragment
         mapFragment.getMapAsync(this)
+
+        RacerRepositorySingleton.getInstance().racerRepository.startTasks()
     }
 
     /**
@@ -86,7 +89,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
             deviceLocation()
 
 
-            fixedRateTimer(period = refreshTime) {
+            updateLocTask = fixedRateTimer(period = refreshTime) {
                 Log.d("updateLocTask@MA", "updating localization")
                 this@MapsActivity.deviceLocation()
                 this@MapsActivity.runOnUiThread {
@@ -114,18 +117,11 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         }
     }
 
-//    override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
-//        if (keyCode == KeyEvent.KEYCODE_BACK && event?.repeatCount == 0) {
-//            Log.d(LOG_TAG, "Back called")
-//
-//            onReturnPressed()
-//        }
-//        return super.onKeyDown(keyCode, event)
-//    }
-//
-//    private fun onReturnPressed() {
-//        finish()
-//    }
+    override fun onBackPressed() {
+        RacerRepositorySingleton.getInstance().racerRepository.cancelTasks()
+        updateLocTask?.cancel()
+        finish()
+    }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
         mLocationPermsGranted = false

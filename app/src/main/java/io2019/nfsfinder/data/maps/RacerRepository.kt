@@ -17,6 +17,8 @@ class RacerRepository {
     val requestHandler = RequestHandler()
     val LOGTAG = "RacerRepository"
 
+    val tasks: LinkedList<Timer> = LinkedList()
+
     var updated: Boolean by Delegates.observable(false) {_, _, _ ->
         afterUpdate?.invoke()
     }
@@ -26,14 +28,6 @@ class RacerRepository {
     lateinit var currentLocation: LatLng
 
     init {
-        val updateMapTask = fixedRateTimer(period = refreshTime) {
-            this@RacerRepository.updateRacerMap()
-        }
-
-        val updateLocTask = fixedRateTimer(period = refreshTime) {
-            this@RacerRepository.updateLocation()
-        }
-
         Log.d(LOGTAG, "Initialized cyclic tasks")
     }
 
@@ -67,5 +61,23 @@ class RacerRepository {
 
             requestHandler.updateLoc(loginRepository.user!!.userId, lat, lng, errorReaction)
         }
+    }
+
+    fun startTasks() {
+        tasks.add(fixedRateTimer(period = refreshTime) {
+            this@RacerRepository.updateRacerMap()
+        })
+
+        tasks.add(fixedRateTimer(period = refreshTime) {
+            this@RacerRepository.updateLocation()
+        })
+    }
+
+    fun cancelTasks() {
+        for (task in tasks) {
+            task.cancel()
+        }
+
+        tasks.clear()
     }
 }
