@@ -31,7 +31,7 @@ import kotlin.concurrent.fixedRateTimer
 
 class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
-    private lateinit var currentLocation: LatLng
+    private var currentLocation: LatLng = LatLng(52.212204, 20.982142)
 
     private val LOG_TAG = "MapsActivity"
     private val DEFAULT_MAP_ZOOM = 15f
@@ -167,6 +167,10 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
     private fun deviceLocation() {
         mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this)
+
+        for (marker in markerList) {
+
+        }
 
         try {
             if (mLocationPermsGranted) {
