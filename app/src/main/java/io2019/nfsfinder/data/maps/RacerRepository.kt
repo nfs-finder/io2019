@@ -13,7 +13,7 @@ class RacerRepository {
     val loginRepository: LoginRepository = LoginRepositorySingleton.getInstance().loginRepository
     val racerMap: MutableMap<Int, Racer> = HashMap()
     private var refreshTime: Long = 3000 //frequency of updates in milliseconds
-    private var searchRadius: Long = 2000 //in meters
+    private var searchRadius: Long = 9000000 //in meters
     val requestHandler = RequestHandler()
     val LOGTAG = "RacerRepository"
 

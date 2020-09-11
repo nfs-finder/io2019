@@ -88,7 +88,6 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         if (mLocationPermsGranted) {
             deviceLocation()
 
-
             updateLocTask = fixedRateTimer(period = refreshTime) {
                 Log.d("updateLocTask@MA", "updating localization")
                 this@MapsActivity.deviceLocation()
@@ -135,6 +134,34 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                     }
                 }
                 mLocationPermsGranted = true
+
+                deviceLocation()
+
+                updateLocTask = fixedRateTimer(period = refreshTime) {
+                    Log.d("updateLocTask@MA", "updating localization")
+                    this@MapsActivity.deviceLocation()
+                    this@MapsActivity.runOnUiThread {
+                        run {
+                            displayRacers()
+                        }
+                    }
+                }
+
+                Log.d(LOG_TAG, "Initialized cyclic tasks")
+
+                if (ActivityCompat.checkSelfPermission(this, FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                    && ActivityCompat.checkSelfPermission(this, COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                    return
+                }
+
+                mMap.isMyLocationEnabled = true
+                mMap.uiSettings.isMyLocationButtonEnabled = false
+
+                mMap.setOnCameraMoveListener {
+                    zoom = false
+                    display = false
+                }
+                searchInit()
             }
         }
     }
